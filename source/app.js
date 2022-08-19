@@ -62,3 +62,5 @@ function handleOperator(nextOperator) {
   calculator.operator = nextOperator;
   console.log(calculator);
 }
+
+// https://freshman.tech/calculator/
