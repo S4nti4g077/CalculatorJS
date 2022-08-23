@@ -19,6 +19,11 @@ function inputDigit(digit) {
 }
 
 function inputDecimal(dot) {
+  if (calculator.waitingForSecondOperand === true) {
+    calculator.displayValue = "0.";
+    calculator.waitingForSecondOperand = false;
+    return;
+  }
   if (!calculator.displayValue.includes(dot)) {
     calculator.displayValue += dot;
   }
@@ -58,6 +63,14 @@ function calculate(firstOperand, secondOperand, operator) {
   }
   return secondOperand;
 }
+function resetCalculator() {
+  calculator.displayValue = "0";
+  calculator.firstOperand = null;
+  calculator.waitingForSecondOperand = false;
+  calculator.operator = null;
+  console.log(calculator);
+}
+
 function updateDisplay() {
   const display = document.querySelector("#screen-display");
   display.value = calculator.displayValue;
@@ -65,30 +78,62 @@ function updateDisplay() {
 updateDisplay();
 
 const keys = document.querySelector(".keys");
+
 keys.addEventListener("click", (event) => {
   const { target } = event;
-  //   if click is not on a button, leave function:
+  const { value } = target;
   if (!target.matches("button")) {
     return;
   }
-  //   show our clicked button - operator
-  if (target.classList.contains("operator")) {
-    handleOperator(target.value);
-    updateDisplay();
-    return;
+
+  switch (value) {
+    case "+":
+    case "-":
+    case "*":
+    case "/":
+    case "=":
+      handleOperator(value);
+      break;
+    case ".":
+      inputDecimal(value);
+      break;
+    case "AC":
+      resetCalculator();
+      break;
+    default:
+      // check if the key is an integer
+      if (Number.isInteger(parseFloat(value))) {
+        inputDigit(value);
+      }
   }
-  //   if it is a decimal, print decimal
-  if (target.classList.contains("decimal")) {
-    inputDecimal(target.value);
-    updateDisplay();
-    return;
-  }
-  //   if it is all clear - print it
-  if (target.classList.contains("AC")) {
-    console.log("All Clear", target.value);
-    return;
-  }
-  //   everything else is a digit
-  inputDigit(target.value);
+
   updateDisplay();
 });
+
+// keys.addEventListener("click", (event) => {
+//   const { target } = event;
+//   //   if click is not on a button, leave function:
+//   if (!target.matches("button")) {
+//     return;
+//   }
+//   //   show our clicked button - operator
+//   if (target.classList.contains("operator")) {
+//     handleOperator(target.value);
+//     updateDisplay();
+//     return;
+//   }
+//   //   if it is a decimal, print decimal
+//   if (target.classList.contains("decimal")) {
+//     inputDecimal(target.value);
+//     updateDisplay();
+//     return;
+//   }
+//   //   if it is all clear - print it
+//   if (target.classList.contains("AC")) {
+//     console.log("All Clear", target.value);
+//     return;
+//   }
+//   //   everything else is a digit
+//   inputDigit(target.value);
+//   updateDisplay();
+// });
